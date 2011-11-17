@@ -1,0 +1,13 @@
+feauture:
+   fixed record size, key length and value length when create new Fkv database.
+   quick write/read, 50000 put/second,100000 get/second in my macbook466(hdd).
+   small db size, because fixed key/value length, new record can reuse delete space.
+
+exmaple:		
+	File dbFile = new File("/tmp/fkvtest.db");
+	Fkv fkv = new FkvImpl(dbFile, 10000, 8, 10); // this db can store 10000 records
+	String key = "01234567";  // key must 8 byte size
+	String value = "0123456789"; // value must 10 byte size
+	fkv.put(key, value);
+	fkv.delete(key);
+	fkv.get(key);
