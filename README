@@ -4,8 +4,9 @@ feauture:
    	small db size, because of fixed key/value length, new input record can reuse the deleted space.
 
 exmaple:		
-	File dbFile = new File("/tmp/fkvtest.db"); // load database file or create new one(if file not exists) 
-	Fkv fkv = new FkvImpl(dbFile, 10000, 8, 10); // this fkv db can store 10000 records(if file is new)
+	File dbFile = new File("/tmp/fkvtest.db"); 
+	// load old database or create new one(if file not exists) witch can store 10000 records  
+	Fkv fkv = new FkvImpl(dbFile, 10000, 8, 10); 
 	String key = "01234567";  // key must 8 byte size
 	String value = "0123456789"; // value must 10 byte size
 	fkv.put(key, value);
