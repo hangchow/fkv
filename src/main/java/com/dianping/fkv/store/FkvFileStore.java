@@ -20,8 +20,8 @@ public class FkvFileStore implements FkvStore {
 	private FileChannel ch;
 	private MappedByteBuffer buffer;
 	private final static int DEFAULT_DB_SIZE = 1024 * 1024;
-	private static final byte STATUS_DELETE = (byte) 0;
-	private static final byte STATUS_ACTIVE = (byte) 1;
+	private static final byte STATUS_DELETE = '0';
+	private static final byte STATUS_ACTIVE = '1';
 	private static final byte NL = '\n';
 	private boolean needDeserial = false;
 
@@ -106,7 +106,7 @@ public class FkvFileStore implements FkvStore {
 		}
 		return true;
 	}
-	
+
 	@Override
 	public boolean isDelete(byte[] record) {
 		if (record[0] == STATUS_DELETE) {
@@ -119,12 +119,12 @@ public class FkvFileStore implements FkvStore {
 	public int remaining() {
 		return this.buffer.remaining();
 	}
-	
+
 	@Override
 	public void rewind() {
 		this.buffer.rewind();
 	}
-	
+
 	@Override
 	public void get(byte[] bytes) {
 		this.buffer.get(bytes);
