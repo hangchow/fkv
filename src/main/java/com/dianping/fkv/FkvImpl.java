@@ -40,7 +40,11 @@ public class FkvImpl implements Fkv {
 	private int maxRecordSize;
 
 	public Map<String, Record> getActiveCache() {
-		return activeCache;
+		return this.activeCache;
+	}
+
+	public Deque<Record> getDeletedCache() {
+		return this.deletedCache;
 	}
 
 	public FkvStore getStore() {
@@ -92,20 +96,17 @@ public class FkvImpl implements Fkv {
 			while (this.store.remaining() > 0) {
 				store.get(recordBuf);
 				if (store.isValidRecord(recordBuf)) {
-					index += recordLength;
-					Record r = new Record();
 					byte[] keyBuf = new byte[keyLength];
 					System.arraycopy(recordBuf, STATUS_LENGTH, keyBuf, 0, keyLength);
-					r.setKey(keyBuf);
-					r.setIndex(index);
 					byte[] valueBuf = new byte[valueLength];
 					System.arraycopy(recordBuf, STATUS_LENGTH + keyLength, valueBuf, 0, valueLength);
-					r.setValue(valueBuf);
+					Record record = this.createNewRecord(new String(keyBuf), new String(valueBuf), index);
 					if (store.isDelete(recordBuf)) {
-						this.deletedCache.push(r);
+						this.deletedCache.push(record);
 					} else {
-						this.activeCache.put(new String(r.getKey()), r);
+						this.activeCache.put(record.getStringKey(), record);
 					}
+					index += recordLength;
 				} else {
 					log.error("break because error record:" + new String(recordBuf));
 					break;
@@ -119,8 +120,8 @@ public class FkvImpl implements Fkv {
 	public int size() {
 		return this.activeCache.size();
 	}
-	
-	public int deleteSize() {
+
+	public int getDeletedSize() {
 		return this.deletedCache.size();
 	}
 
@@ -132,10 +133,21 @@ public class FkvImpl implements Fkv {
 			if (record == null) {
 				return null;
 			}
-			return new String(record.getValue());
+			return record.getStringValue();
 		} finally {
 			lock.readLock().unlock();
 		}
+	}
+
+	public Record getRecord(String key) {
+		Record record = null;
+		try {
+			lock.readLock().lock();
+			record = this.activeCache.get(key);
+		} finally {
+			lock.readLock().unlock();
+		}
+		return record;
 	}
 
 	@Override
@@ -158,6 +170,7 @@ public class FkvImpl implements Fkv {
 			} else {
 				byte[] valueBytes = value.getBytes();
 				record.setValue(valueBytes);
+				record.setStringValue(value);
 				putRecordValue(record);
 			}
 		} finally {
@@ -166,13 +179,7 @@ public class FkvImpl implements Fkv {
 
 	}
 
-	protected void putRecordValue(Record record) {
-		this.store.put(record.getIndex() + STATUS_LENGTH + keyLength, record.getValue());
-	}
-
-	protected void putNewRecord(String key, String value) {
-		Record newRecord = new Record();
-		newRecord.setValue(value.getBytes());
+	private void putNewRecord(String key, String value) {
 		int index;
 		if (this.deletedCache.isEmpty()) { // no deleted record
 			index = endIndex;
@@ -181,12 +188,47 @@ public class FkvImpl implements Fkv {
 			Record deletedRecord = this.deletedCache.pop();
 			index = deletedRecord.getIndex();
 		}
-		newRecord.setIndex(index);
-		this.store.active(index); // (byte)1
-		this.store.put(index + STATUS_LENGTH, key.getBytes()); // key
-		putRecordValue(newRecord); // value
-		this.store.next(index + STATUS_LENGTH + keyLength + valueLength); // \n
+		Record newRecord = createNewRecord(key, value, index);
+		storeNewRecord(newRecord); // first store record
+		cacheNewRecord(key, newRecord); // second cache record
+	}
+
+	private void cacheNewRecord(String key, Record newRecord) {
 		this.activeCache.put(key, newRecord);
+	}
+
+	private void storeNewRecord(Record newRecord) {
+		putRecordStart(newRecord); // (byte)1
+		putRecordKey(newRecord); // key
+		putRecordValue(newRecord); // value
+		putRecordEnded(newRecord);// \n
+	}
+
+	private Record createNewRecord(String key, String value, int index) {
+		Record newRecord = new Record();
+		newRecord.setValue(value.getBytes());
+		newRecord.setStringValue(value);
+		newRecord.setKey(key.getBytes());
+		newRecord.setStringKey(key);
+		newRecord.setIndex(index);
+		return newRecord;
+	}
+
+	private void putRecordStart(Record record) {
+		this.store.active(record.getIndex());
+	}
+
+	private void putRecordEnded(Record record) {
+		this.store.next(record.getIndex() + STATUS_LENGTH + keyLength + valueLength);
+	}
+
+	private void putRecordKey(Record record) {
+		this.store.put(record.getIndex() + STATUS_LENGTH, record.getKey());
+
+	}
+
+	private void putRecordValue(Record record) {
+		this.store.put(record.getIndex() + STATUS_LENGTH + keyLength, record.getValue());
 	}
 
 	@Override

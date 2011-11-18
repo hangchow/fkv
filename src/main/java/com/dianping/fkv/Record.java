@@ -8,6 +8,10 @@ public class Record {
 
 	private byte[] value;
 
+	private String stringKey;
+
+	private String stringValue;
+
 	public int getIndex() {
 		return index;
 	}
@@ -30,6 +34,22 @@ public class Record {
 
 	public void setKey(byte[] key) {
 		this.key = key;
+	}
+
+	public String getStringKey() {
+		return stringKey;
+	}
+
+	public String getStringValue() {
+		return stringValue;
+	}
+
+	public void setStringKey(String stringKey) {
+		this.stringKey = stringKey;
+	}
+
+	public void setStringValue(String stringValue) {
+		this.stringValue = stringValue;
 	}
 
 }
