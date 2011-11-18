@@ -1,7 +1,7 @@
 feauture:
    	fixed record size, key length and value length when create new Fkv database.
-   	quick write/read, 20,0000 put/second,100,0000 get/second in my macbook466(hdd) wich 8 byte size key and 10 byte size value.
-   	small db size, because of fixed key/value length, new input record can reuse the deleted space.
+   	quick write/read, 20,0000 put/second,100,0000 get/second in my macbook466(hdd) with 8 byte size key and 10 byte size value.
+   	small db size, because of fixed key/value length, new input record will reuse the deleted space first, and then append in the end if no deleted space
 
 exmaple:		
 	File dbFile = new File("/tmp/fkvtest.db"); 
