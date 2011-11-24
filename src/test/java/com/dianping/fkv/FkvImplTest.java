@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.dianping.fkv.store;
+package com.dianping.fkv;
 
 import java.io.File;
 import java.io.IOException;
@@ -70,7 +70,7 @@ public class FkvImplTest {
 		Assert.assertEquals(fkv.getRecordLength() * 1, fkv.getEndIndex());
 		Assert.assertEquals(value, fkv.get(key));
 	}
-	
+
 	@Test
 	public void testUpdate() {
 		String key = "01234567";
@@ -146,72 +146,6 @@ public class FkvImplTest {
 			fkv.put(key, value);
 			fkv.delete(key);
 		}
-	}
-
-	// ===================== performance ==================================
-	private int perfTimes = 100000;
-
-	/**
-	 * Test method for {@link com.dianping.fkv.FkvImpl#get(java.lang.String)}.
-	 */
-	@Test
-	public void testPutSameKeyPerf() {
-		String key = "01234567";
-		String value = "0123456789";
-		fkv.put(key, value);
-		long start = System.currentTimeMillis();
-		for (int i = 0; i < perfTimes; i++) {
-			fkv.put(key, value);
-		}
-		System.out.println("testPutSameKeyPerf:" + (System.currentTimeMillis() - start));
-	}
-
-	/**
-	 * Test method for {@link com.dianping.fkv.FkvImpl#get(java.lang.String)}.
-	 */
-	@Test
-	public void testPutDiffKeyPerf() {
-		String value = "0123456789";
-		fkv.put("" + (12345678), value);
-		fkv.delete("" + (12345678));
-		long start = System.currentTimeMillis();
-		for (int i = 0; i < perfTimes; i++) {
-			fkv.put("" + (10000000 + i), value);
-		}
-		System.out.println("testPutDiffKeyPerf:" + (System.currentTimeMillis() - start));
-	}
-
-	/**
-	 * Test method for {@link com.dianping.fkv.FkvImpl#get(java.lang.String)}.
-	 */
-	@Test
-	public void testGetSameKeyPerf() {
-		String key = "01234567";
-		String value = "0123456789";
-		fkv.put(key, value);
-		fkv.get(key);
-		long start = System.currentTimeMillis();
-		for (int i = 0; i < perfTimes; i++) {
-			fkv.get(key);
-		}
-		System.out.println("testGetSameKeyPerf:" + (System.currentTimeMillis() - start));
-	}
-
-	/**
-	 * Test method for {@link com.dianping.fkv.FkvImpl#get(java.lang.String)}.
-	 */
-	@Test
-	public void testPutDeletePerf() {
-		String key = "01234567";
-		String value = "0123456789";
-		fkv.put(key, value);
-		fkv.delete(key);
-		long start = System.currentTimeMillis();
-		for (int i = 0; i < perfTimes / 2; i++) {
-			fkv.put(key, value);
-			fkv.delete(key);
-		}
-		System.out.println("testPutDeletePerf:" + (System.currentTimeMillis() - start));
 	}
 
 }

@@ -7,8 +7,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -83,7 +83,7 @@ public class FkvImpl implements Fkv {
 		// init store
 		this.store = new FkvFileStore(dbFile, this.recordLength * maxRecordSize);
 		// init active cache
-		this.activeCache = new ConcurrentHashMap<String, Record>(maxRecordSize);
+		this.activeCache = new HashMap<String, Record>(maxRecordSize);
 		// init deleted stack
 		this.deletedCache = new ArrayDeque<Record>();
 		deserial(keyLength, valueLength);
