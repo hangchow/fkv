@@ -10,7 +10,7 @@
 	<groupId>com.dianping.fkv</groupId>
 	<artifactId>fkv</artifactId>
 	<packaging>jar</packaging>
-	<version>0.1.0</version>
+	<version>0.1.1</version>
 	<name>fkv v${project.version}</name>
 	<organization>
 	</organization>

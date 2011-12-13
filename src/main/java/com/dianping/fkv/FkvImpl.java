@@ -12,9 +12,6 @@ import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.dianping.fkv.store.FkvFileStore;
 import com.dianping.fkv.store.FkvStore;
 
@@ -25,8 +22,6 @@ import com.dianping.fkv.store.FkvStore;
  * @since Nov 16, 2011
  */
 public class FkvImpl implements Fkv {
-	private static final Log log = LogFactory.getLog(FkvImpl.class);
-
 	private Map<String, Record> activeCache;
 	private Deque<Record> deletedCache;
 	private FkvStore store;
@@ -108,7 +103,7 @@ public class FkvImpl implements Fkv {
 					}
 					index += recordLength;
 				} else {
-					log.error("break because error record:" + new String(recordBuf));
+					// reach ender, break
 					break;
 				}
 			}

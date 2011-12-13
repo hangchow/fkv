@@ -22,6 +22,12 @@ import com.dianping.fkv.FkvImpl;
  */
 public class FkvImplTest {
 
+	private static final int valueLength = 10;
+
+	private static final int keyLength = 8;
+
+	private static final int size = 100000;
+
 	FkvImpl fkv;
 
 	File dbFile;
@@ -47,7 +53,7 @@ public class FkvImplTest {
 	public void setUp() throws Exception {
 		dbFile = new File("/tmp/fkvtest.db");
 		dbFile.delete();
-		fkv = new FkvImpl(dbFile, 100000, 8, 10);
+		fkv = new FkvImpl(dbFile, size, keyLength, valueLength);
 	}
 
 	/**
@@ -115,6 +121,7 @@ public class FkvImplTest {
 		fkv.put(key2, value2);
 		fkv.delete(key2);
 		fkv.close();
+		Assert.assertEquals(size * (keyLength + valueLength + 2), dbFile.length());
 		// deserial
 		fkv = new FkvImpl(dbFile, 10000, 8, 10);
 		Assert.assertEquals(1, fkv.size());
