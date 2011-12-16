@@ -1,5 +1,5 @@
 # fkv
-fkv is a fast key-value store, can used in embedded scene.
+fkv is a fast key-value store written in java, it applies to embedded scene.
 
 ## feauture
 - fixed record size, key length and value length when create new Fkv database.
@@ -26,4 +26,4 @@ fkv is a fast key-value store, can used in embedded scene.
 ```
 
 # community
-weibo.com/seanlinwang  xailnx@gmail.com
+[http://weibo.com/seanlinwang](weibo.com/seanlinwang)  xailnx@gmail.com
