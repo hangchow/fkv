@@ -6,6 +6,10 @@ fkv is a fast key-value store, can used in embedded scene.
 - very quick write/read speed, 20,0000 put/second,100,0000 get/second in my macbook466(hdd) with 8 byte size key and 10 byte size value.
 - small db size, because of fixed key/value length, new input record will reuse the deleted space first, and then append in the end if no deleted space
 
+## architect
+![architect](/doc/img/fkv.png "fkv architect")
+
+
 # exmaple
 ```java		
 	File dbFile = new File("/tmp/fkvtest.db"); 
@@ -22,4 +26,4 @@ fkv is a fast key-value store, can used in embedded scene.
 ```
 
 # community
-xailnx@gmail.com
+weibo.com/seanlinwang  xailnx@gmail.com
