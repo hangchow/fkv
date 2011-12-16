@@ -7,7 +7,7 @@ fkv is a fast key-value store, can used in embedded scene.
 - small db size, because of fixed key/value length, new input record will reuse the deleted space first, and then append in the end if no deleted space
 
 ## architect
-![architect](/doc/img/fkv.png "fkv architect")
+![architect](http://ww1.sinaimg.cn/mw600/648d6e26gw1do4szstuhaj.jpg "fkv architect")
 
 
 # exmaple
