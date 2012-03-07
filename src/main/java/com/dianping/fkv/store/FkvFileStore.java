@@ -20,9 +20,7 @@ public class FkvFileStore implements FkvStore {
 	private FileChannel ch;
 	private MappedByteBuffer buffer;
 	private final static int DEFAULT_DB_SIZE = 1024 * 1024;
-	private static final byte STATUS_DELETE = '0';
-	private static final byte STATUS_ACTIVE = '1';
-	private static final byte NL = '\n';
+
 	private boolean needDeserial = false;
 
 	public FkvFileStore(File dbFile) throws IOException {
@@ -49,6 +47,17 @@ public class FkvFileStore implements FkvStore {
 	}
 
 	@Override
+	public void close() throws IOException {
+		ch.close();
+		in.close();
+	}
+
+	@Override
+	public void get(byte[] bytes) {
+		this.buffer.get(bytes);
+	}
+
+	@Override
 	public byte[] get(int startIndex, int size) {
 		byte[] value = new byte[size];
 		buffer.position(startIndex);
@@ -57,33 +66,8 @@ public class FkvFileStore implements FkvStore {
 	}
 
 	@Override
-	public void put(int startIndex, byte[] value) {
-		buffer.position(startIndex);
-		buffer.put(value);
-	}
-
-	@Override
-	public void delete(int startIndex) {
-		buffer.position(startIndex);
-		buffer.put(STATUS_DELETE);
-	}
-
-	@Override
-	public void active(int startIndex) {
-		buffer.position(startIndex);
-		buffer.put(STATUS_ACTIVE);
-	}
-
-	@Override
-	public void next(int startIndex) {
-		buffer.position(startIndex);
-		buffer.put(NL);
-	}
-
-	@Override
-	public void close() throws IOException {
-		ch.close();
-		in.close();
+	public ByteBuffer getBuffer() {
+		return this.buffer;
 	}
 
 	@Override
@@ -92,27 +76,15 @@ public class FkvFileStore implements FkvStore {
 	}
 
 	@Override
-	public ByteBuffer getBuffer() {
-		return this.buffer;
+	public void put(int startIndex, byte value) {
+		buffer.position(startIndex);
+		buffer.put(value);
 	}
 
 	@Override
-	public boolean isValidRecord(byte[] recordBuf) {
-		if (recordBuf[0] != STATUS_ACTIVE && recordBuf[0] != STATUS_DELETE) {
-			return false;
-		}
-		if (recordBuf[recordBuf.length - 1] != NL) {
-			return false;
-		}
-		return true;
-	}
-
-	@Override
-	public boolean isDelete(byte[] record) {
-		if (record[0] == STATUS_DELETE) {
-			return true;
-		}
-		return false;
+	public void put(int startIndex, byte[] value) {
+		buffer.position(startIndex);
+		buffer.put(value);
 	}
 
 	@Override
@@ -123,11 +95,6 @@ public class FkvFileStore implements FkvStore {
 	@Override
 	public void rewind() {
 		this.buffer.rewind();
-	}
-
-	@Override
-	public void get(byte[] bytes) {
-		this.buffer.get(bytes);
 	}
 
 }

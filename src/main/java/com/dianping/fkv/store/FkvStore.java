@@ -11,22 +11,14 @@ public interface FkvStore {
 	byte[] get(int startIndex, int size);
 
 	void put(int startIndex, byte[] value);
-
-	void delete(int startIndex);
-
-	void active(int startIndex);
-
-	void next(int startIndex);
+	
+	void put(int startIndex, byte value);
 
 	void close() throws IOException;
 
 	boolean isNeedDeserial();
 
 	ByteBuffer getBuffer();
-
-	boolean isValidRecord(byte[] record);
-	
-	boolean isDelete(byte[] record);
 
 	void rewind();
 

@@ -44,7 +44,7 @@ public class FkvPerfTest {
 	public void setUp() throws Exception {
 		dbFile = new File("/tmp/fkvtest.db");
 		dbFile.delete();
-		fkv = new FkvImpl(dbFile, 100000, 8, 10);
+		fkv = new FkvImpl(dbFile, perfTimes, 8, 10);
 	}
 
 	/**
@@ -56,7 +56,7 @@ public class FkvPerfTest {
 		dbFile.delete();
 	}
 
-	private int perfTimes = 100000;
+	private int perfTimes = 20 * 10000;
 
 	/**
 	 * Test method for {@link com.dianping.fkv.FkvImpl#get(java.lang.String)}.
@@ -65,7 +65,6 @@ public class FkvPerfTest {
 	public void testPutSameKeyPerf() {
 		String key = "01234567";
 		String value = "0123456789";
-		fkv.put(key, value);
 		long start = System.currentTimeMillis();
 		for (int i = 0; i < perfTimes; i++) {
 			fkv.put(key, value);
@@ -79,8 +78,6 @@ public class FkvPerfTest {
 	@Test
 	public void testPutDiffKeyPerf() {
 		String value = "0123456789";
-		fkv.put("" + (12345678), value);
-		fkv.delete("" + (12345678));
 		long start = System.currentTimeMillis();
 		for (int i = 0; i < perfTimes; i++) {
 			fkv.put("" + (10000000 + i), value);
@@ -94,9 +91,6 @@ public class FkvPerfTest {
 	@Test
 	public void testGetSameKeyPerf() {
 		String key = "01234567";
-		String value = "0123456789";
-		fkv.put(key, value);
-		fkv.get(key);
 		long start = System.currentTimeMillis();
 		for (int i = 0; i < perfTimes; i++) {
 			fkv.get(key);
@@ -111,8 +105,6 @@ public class FkvPerfTest {
 	public void testPutDeletePerf() {
 		String key = "01234567";
 		String value = "0123456789";
-		fkv.put(key, value);
-		fkv.delete(key);
 		long start = System.currentTimeMillis();
 		for (int i = 0; i < perfTimes / 2; i++) {
 			fkv.put(key, value);

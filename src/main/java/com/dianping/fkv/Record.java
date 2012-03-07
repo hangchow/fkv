@@ -1,5 +1,7 @@
 package com.dianping.fkv;
 
+import java.util.Arrays;
+
 public class Record {
 
 	private int index;
@@ -50,6 +52,23 @@ public class Record {
 
 	public void setStringValue(String stringValue) {
 		this.stringValue = stringValue;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Record [index=");
+		builder.append(index);
+		builder.append(", key=");
+		builder.append(Arrays.toString(key));
+		builder.append(", value=");
+		builder.append(Arrays.toString(value));
+		builder.append(", stringKey=");
+		builder.append(stringKey);
+		builder.append(", stringValue=");
+		builder.append(stringValue);
+		builder.append("]");
+		return builder.toString();
 	}
 
 }

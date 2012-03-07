@@ -9,8 +9,8 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import com.dianping.fkv.store.FkvFileStore;
 import com.dianping.fkv.store.FkvStore;
@@ -25,46 +25,18 @@ public class FkvImpl implements Fkv {
 	private Map<String, Record> activeCache;
 	private Deque<Record> deletedCache;
 	private FkvStore store;
-	private ReadWriteLock lock = new ReentrantReadWriteLock();
+	private final Lock writeLock = new ReentrantLock();
 	private int endIndex = 0;
+	private static final byte STATUS_DELETE = '0';
+	private static final byte STATUS_ACTIVE = '1';
+	private static final byte ENDER = '\n';
 	private static final int STATUS_LENGTH = 1;
-	private static final int SPLIT_LENGTH = 1;
+	private static final int ENDER_LENGTH = 1;
 	private int keyLength;
 	private int valueLength;
 	private int recordLength;
 	private int maxRecordSize;
-
-	public Map<String, Record> getActiveCache() {
-		return this.activeCache;
-	}
-
-	public Deque<Record> getDeletedCache() {
-		return this.deletedCache;
-	}
-
-	public FkvStore getStore() {
-		return store;
-	}
-
-	public int getEndIndex() {
-		return endIndex;
-	}
-
-	public int getKeyLength() {
-		return keyLength;
-	}
-
-	public int getValueLength() {
-		return valueLength;
-	}
-
-	public int getRecordLength() {
-		return recordLength;
-	}
-
-	public int getMaxRecordSize() {
-		return maxRecordSize;
-	}
+	private byte[] writeBuffer;
 
 	public FkvImpl(File dbFile, int fixedKeyLength, int fixedValueLength) throws IOException {
 		this(dbFile, 0, fixedKeyLength, fixedValueLength);
@@ -73,7 +45,8 @@ public class FkvImpl implements Fkv {
 	public FkvImpl(File dbFile, int maxRecordSize, int keyLength, int valueLength) throws IOException {
 		this.keyLength = keyLength;
 		this.valueLength = valueLength;
-		this.recordLength = STATUS_LENGTH + keyLength + valueLength + SPLIT_LENGTH;
+		this.recordLength = STATUS_LENGTH + keyLength + valueLength + ENDER_LENGTH;
+		this.writeBuffer = new byte[recordLength];
 		this.maxRecordSize = maxRecordSize;
 		// init store
 		this.store = new FkvFileStore(dbFile, this.recordLength * maxRecordSize);
@@ -81,22 +54,56 @@ public class FkvImpl implements Fkv {
 		this.activeCache = new HashMap<String, Record>(maxRecordSize);
 		// init deleted stack
 		this.deletedCache = new ArrayDeque<Record>();
-		deserial(keyLength, valueLength);
+		deserial();
 	}
 
-	protected void deserial(int keyLength, int valueLength) {
+	private void cacheNewRecord(String key, Record newRecord) {
+		this.activeCache.put(key, newRecord);
+	}
+
+	@Override
+	public void close() throws IOException {
+		this.store.close();
+	}
+
+	private Record createNewRecord(String key, String value, int index) {
+		Record newRecord = new Record();
+		newRecord.setValue(value.getBytes());
+		newRecord.setStringValue(value);
+		newRecord.setKey(key.getBytes());
+		newRecord.setStringKey(key);
+		newRecord.setIndex(index);
+		return newRecord;
+	}
+
+	@Override
+	public void delete(String key) {
+		try {
+			writeLock.lock();
+			Record r = this.activeCache.get(key);
+			if (r != null) {
+				Record deletedRecord = this.activeCache.remove(key);
+				this.deletedCache.add(deletedRecord);
+				this.store.put(deletedRecord.getIndex(), STATUS_DELETE);
+			}
+		} finally {
+			writeLock.unlock();
+		}
+	}
+
+	protected void deserial() {
 		if (this.store.isNeedDeserial()) {
 			byte[] recordBuf = new byte[recordLength];
 			int index = 0;
 			while (this.store.remaining() > 0) {
 				store.get(recordBuf);
-				if (store.isValidRecord(recordBuf)) {
+				if (isValidRecord(recordBuf)) {
 					byte[] keyBuf = new byte[keyLength];
 					System.arraycopy(recordBuf, STATUS_LENGTH, keyBuf, 0, keyLength);
 					byte[] valueBuf = new byte[valueLength];
 					System.arraycopy(recordBuf, STATUS_LENGTH + keyLength, valueBuf, 0, valueLength);
 					Record record = this.createNewRecord(new String(keyBuf), new String(valueBuf), index);
-					if (store.isDelete(recordBuf)) {
+					if (isDelete(recordBuf)) {
 						this.deletedCache.push(record);
 					} else {
 						this.activeCache.put(record.getStringKey(), record);
@@ -112,37 +119,71 @@ public class FkvImpl implements Fkv {
 	}
 
 	@Override
-	public int size() {
-		return this.activeCache.size();
+	public String get(String key) {
+		Record record = this.activeCache.get(key);
+		if (record == null) {
+			return null;
+		}
+		return record.getStringValue();
+	}
+
+	public Map<String, Record> getActiveCache() {
+		return this.activeCache;
+	}
+
+	public Deque<Record> getDeletedCache() {
+		return this.deletedCache;
 	}
 
 	public int getDeletedSize() {
 		return this.deletedCache.size();
 	}
 
-	@Override
-	public String get(String key) {
-		try {
-			lock.readLock().lock();
-			Record record = this.activeCache.get(key);
-			if (record == null) {
-				return null;
-			}
-			return record.getStringValue();
-		} finally {
-			lock.readLock().unlock();
-		}
+	public int getEndIndex() {
+		return endIndex;
+	}
+
+	public int getKeyLength() {
+		return keyLength;
+	}
+
+	public int getMaxRecordSize() {
+		return maxRecordSize;
 	}
 
 	public Record getRecord(String key) {
 		Record record = null;
-		try {
-			lock.readLock().lock();
-			record = this.activeCache.get(key);
-		} finally {
-			lock.readLock().unlock();
-		}
+		record = this.activeCache.get(key);
 		return record;
+	}
+
+	public int getRecordLength() {
+		return recordLength;
+	}
+
+	public FkvStore getStore() {
+		return store;
+	}
+
+	public int getValueLength() {
+		return valueLength;
+	}
+
+	private boolean isDelete(byte[] record) {
+		if (record[0] == STATUS_DELETE) {
+			return true;
+		}
+		return false;
+	}
+
+	private boolean isValidRecord(byte[] recordBuf) {
+		if (recordBuf[0] != STATUS_ACTIVE && recordBuf[0] != STATUS_DELETE) {
+			return false;
+		}
+		if (recordBuf[recordBuf.length - 1] != ENDER) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override
@@ -158,7 +199,7 @@ public class FkvImpl implements Fkv {
 			throw new StackOverflowError("size:" + size());
 		}
 		try {
-			lock.writeLock().lock();
+			writeLock.lock();
 			Record record = this.activeCache.get(key);
 			if (record == null) {
 				putNewRecord(key, value);
@@ -166,10 +207,10 @@ public class FkvImpl implements Fkv {
 				byte[] valueBytes = value.getBytes();
 				record.setValue(valueBytes);
 				record.setStringValue(value);
-				putRecordValue(record);
+				this.store.put(record.getIndex() + STATUS_LENGTH + keyLength, valueBytes);
 			}
 		} finally {
-			lock.writeLock().unlock();
+			writeLock.unlock();
 		}
 
 	}
@@ -188,62 +229,19 @@ public class FkvImpl implements Fkv {
 		cacheNewRecord(key, newRecord); // second cache record
 	}
 
-	private void cacheNewRecord(String key, Record newRecord) {
-		this.activeCache.put(key, newRecord);
+	@Override
+	public int size() {
+		return this.activeCache.size();
 	}
 
 	private void storeNewRecord(Record newRecord) {
-		putRecordStart(newRecord); // (byte)1
-		putRecordKey(newRecord); // key
-		putRecordValue(newRecord); // value
-		putRecordEnded(newRecord);// \n
-	}
-
-	private Record createNewRecord(String key, String value, int index) {
-		Record newRecord = new Record();
-		newRecord.setValue(value.getBytes());
-		newRecord.setStringValue(value);
-		newRecord.setKey(key.getBytes());
-		newRecord.setStringKey(key);
-		newRecord.setIndex(index);
-		return newRecord;
-	}
-
-	private void putRecordStart(Record record) {
-		this.store.active(record.getIndex());
-	}
-
-	private void putRecordEnded(Record record) {
-		this.store.next(record.getIndex() + STATUS_LENGTH + keyLength + valueLength);
-	}
-
-	private void putRecordKey(Record record) {
-		this.store.put(record.getIndex() + STATUS_LENGTH, record.getKey());
-
-	}
-
-	private void putRecordValue(Record record) {
-		this.store.put(record.getIndex() + STATUS_LENGTH + keyLength, record.getValue());
-	}
-
-	@Override
-	public void delete(String key) {
-		try {
-			lock.writeLock().lock();
-			Record r = this.activeCache.get(key);
-			if (r != null) {
-				this.store.delete(r.getIndex());
-				Record deletedRecord = this.activeCache.remove(key);
-				this.deletedCache.add(deletedRecord);
-			}
-		} finally {
-			lock.writeLock().unlock();
-		}
-	}
-
-	@Override
-	public void close() throws IOException {
-		this.store.close();
+		writeBuffer[0] = STATUS_ACTIVE;
+		byte[] key = newRecord.getKey();
+		System.arraycopy(key, 0, writeBuffer, 1, key.length);
+		byte[] value = newRecord.getValue();
+		System.arraycopy(value, 0, writeBuffer, 1 + key.length, value.length);
+		writeBuffer[writeBuffer.length - 1] = ENDER;
+		store.put(newRecord.getIndex(), writeBuffer);
 	}
 
 }

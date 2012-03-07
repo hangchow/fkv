@@ -81,7 +81,7 @@ public class FkvImplTest {
 	public void testUpdate() {
 		String key = "01234567";
 		String value = "0123456789";
-		String value2 = "0123456789";
+		String value2 = "9876543210";
 		fkv.put(key, value);
 		Assert.assertEquals(fkv.getRecordLength() * 1, fkv.getEndIndex());
 		Assert.assertEquals(value, fkv.get(key));
