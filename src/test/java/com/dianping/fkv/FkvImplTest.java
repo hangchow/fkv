@@ -130,7 +130,7 @@ public class FkvImplTest {
 		Assert.assertEquals(null, fkv.get(key2)); // key2 is deleted
 		Assert.assertEquals(value, fkv.get(key));
 		Assert.assertEquals(0, fkv.getRecord(key).getIndex());
-		Assert.assertEquals(value, fkv.getRecord(key).getStringValue());
+		Assert.assertEquals(value, fkv.getRecord(key).getValue());
 		fkv.put(key, value2);
 		Assert.assertEquals(value2, fkv.get(key));
 		fkv.put(key2, value2);

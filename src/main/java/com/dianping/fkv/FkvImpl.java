@@ -68,10 +68,8 @@ public class FkvImpl implements Fkv {
 
 	private Record createNewRecord(String key, String value, int index) {
 		Record newRecord = new Record();
-		newRecord.setValue(value.getBytes());
-		newRecord.setStringValue(value);
-		newRecord.setKey(key.getBytes());
-		newRecord.setStringKey(key);
+		newRecord.setValue(value);
+		newRecord.setKey(key);
 		newRecord.setIndex(index);
 		return newRecord;
 	}
@@ -106,7 +104,7 @@ public class FkvImpl implements Fkv {
 					if (isDelete(recordBuf)) {
 						this.deletedCache.push(record);
 					} else {
-						this.activeCache.put(record.getStringKey(), record);
+						this.activeCache.put(record.getKey(), record);
 					}
 					index += recordLength;
 				} else {
@@ -124,7 +122,7 @@ public class FkvImpl implements Fkv {
 		if (record == null) {
 			return null;
 		}
-		return record.getStringValue();
+		return record.getValue();
 	}
 
 	public Map<String, Record> getActiveCache() {
@@ -204,10 +202,8 @@ public class FkvImpl implements Fkv {
 			if (record == null) {
 				putNewRecord(key, value);
 			} else {
-				byte[] valueBytes = value.getBytes();
-				record.setValue(valueBytes);
-				record.setStringValue(value);
-				this.store.put(record.getIndex() + STATUS_LENGTH + keyLength, valueBytes);
+				record.setValue(value);
+				this.store.put(record.getIndex() + STATUS_LENGTH + keyLength, value.getBytes());
 			}
 		} finally {
 			writeLock.unlock();
@@ -236,9 +232,9 @@ public class FkvImpl implements Fkv {
 
 	private void storeNewRecord(Record newRecord) {
 		writeBuffer[0] = STATUS_ACTIVE;
-		byte[] key = newRecord.getKey();
+		byte[] key = newRecord.getKey().getBytes();
 		System.arraycopy(key, 0, writeBuffer, 1, key.length);
-		byte[] value = newRecord.getValue();
+		byte[] value = newRecord.getValue().getBytes();
 		System.arraycopy(value, 0, writeBuffer, 1 + key.length, value.length);
 		writeBuffer[writeBuffer.length - 1] = ENDER;
 		store.put(newRecord.getIndex(), writeBuffer);

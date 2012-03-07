@@ -1,18 +1,13 @@
 package com.dianping.fkv;
 
-import java.util.Arrays;
 
 public class Record {
 
 	private int index;
 
-	private byte[] key;
+	private String key;
 
-	private byte[] value;
-
-	private String stringKey;
-
-	private String stringValue;
+	private String value;
 
 	public int getIndex() {
 		return index;
@@ -22,36 +17,12 @@ public class Record {
 		this.index = startIndex;
 	}
 
-	public byte[] getValue() {
-		return value;
-	}
-
-	public void setValue(byte[] value) {
-		this.value = value;
-	}
-
-	public byte[] getKey() {
+	public String getKey() {
 		return key;
 	}
 
-	public void setKey(byte[] key) {
+	public void setKey(String key) {
 		this.key = key;
-	}
-
-	public String getStringKey() {
-		return stringKey;
-	}
-
-	public String getStringValue() {
-		return stringValue;
-	}
-
-	public void setStringKey(String stringKey) {
-		this.stringKey = stringKey;
-	}
-
-	public void setStringValue(String stringValue) {
-		this.stringValue = stringValue;
 	}
 
 	@Override
@@ -60,15 +31,19 @@ public class Record {
 		builder.append("Record [index=");
 		builder.append(index);
 		builder.append(", key=");
-		builder.append(Arrays.toString(key));
+		builder.append(key);
 		builder.append(", value=");
-		builder.append(Arrays.toString(value));
-		builder.append(", stringKey=");
-		builder.append(stringKey);
-		builder.append(", stringValue=");
-		builder.append(stringValue);
+		builder.append(getValue());
 		builder.append("]");
 		return builder.toString();
+	}
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
 	}
 
 }
