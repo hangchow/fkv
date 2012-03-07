@@ -1,16 +1,20 @@
-# fkv
-fkv is a fast key-value store written in java, it applies to embedded scene.
+# Introduction
+Fkv is a fast key-value store written in java, it applies to embedded scene.
+It is suitable for the scene where record quantity not big but very frequently reading and writing.
 
-## feauture
-- fixed record size, key length and value length when create new Fkv database.
-- very quick write/read speed, 20,0000 put/second,100,0000 get/second in my macbook466(hdd) with 8 byte size key and 10 byte size value.
-- small db size, because of fixed key/value length, new input record will reuse the deleted space first, and then append in the end if no deleted space
+## Advantage
+- Realtime storage, based in java.nio.MappedByteBuffer.
+- Very quick write/read speed, 20,0000 put/second,100,0000 get/second in my macbook466(hdd) with 8 byte size key and 10 byte size value.
+- Small db size, because of fixed key/value length, new input record will reuse the deleted space first, and then append in the end if no deleted space
 
-## architect
+## Weakness
+- Fixed record size, key length and value length when create new Fkv database.
+- Large memory usage because of total value cache
+
+## Architecture
 ![architect](http://ww1.sinaimg.cn/mw600/648d6e26gw1do4szstuhaj.jpg "fkv architect")
 
-
-# exmaple
+## Exmaple
 ```java		
 	File dbFile = new File("/tmp/fkvtest.db"); 
 	// load old database or create new one(if file not exists) witch can store 10000 records  
@@ -25,5 +29,5 @@ fkv is a fast key-value store written in java, it applies to embedded scene.
 	fkv.close();
 ```
 
-# community
+## Feedback
 [http://weibo.com/seanlinwang](weibo.com/seanlinwang)  xailnx@gmail.com
