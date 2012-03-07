@@ -5,6 +5,7 @@ It is suitable for the scene where record quantity not big but very frequently r
 ## Advantage
 - Realtime storage, based in java.nio.MappedByteBuffer.
 - Very quick write/read speed, 30,0000+ put/second, 200,0000+ get/second in my macbook466(hdd) with 8 byte size key and 10 byte size value.
+  see https://github.com/seanlinwang/fkv/blob/master/src/test/java/com/dianping/fkv/FkvPerfTest.java
 - Small db size, because of fixed key/value length, new input record will reuse the deleted space first, and then append in the end if no deleted space
 
 ## Weakness
