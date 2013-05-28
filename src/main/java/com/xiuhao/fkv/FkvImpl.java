@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.dianping.fkv;
+package com.xiuhao.fkv;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,8 +12,8 @@ import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.dianping.fkv.store.FkvFileStore;
-import com.dianping.fkv.store.FkvStore;
+import com.xiuhao.fkv.store.FkvFileStore;
+import com.xiuhao.fkv.store.FkvStore;
 
 /**
  * Fixed length key-value store implement.

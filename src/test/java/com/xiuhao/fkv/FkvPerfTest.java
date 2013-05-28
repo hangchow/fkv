@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.dianping.fkv;
+package com.xiuhao.fkv;
 
 import java.io.File;
 
@@ -11,7 +11,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.dianping.fkv.FkvImpl;
+import com.xiuhao.fkv.FkvImpl;
 
 /**
  * @author sean.wang
@@ -59,7 +59,7 @@ public class FkvPerfTest {
 	private int perfTimes = 20 * 10000;
 
 	/**
-	 * Test method for {@link com.dianping.fkv.FkvImpl#get(java.lang.String)}.
+	 * Test method for {@link com.xiuhao.fkv.FkvImpl#get(java.lang.String)}.
 	 */
 	@Test
 	public void testPutSameKeyPerf() {
@@ -73,7 +73,7 @@ public class FkvPerfTest {
 	}
 
 	/**
-	 * Test method for {@link com.dianping.fkv.FkvImpl#get(java.lang.String)}.
+	 * Test method for {@link com.xiuhao.fkv.FkvImpl#get(java.lang.String)}.
 	 */
 	@Test
 	public void testPutDiffKeyPerf() {
@@ -86,7 +86,7 @@ public class FkvPerfTest {
 	}
 
 	/**
-	 * Test method for {@link com.dianping.fkv.FkvImpl#get(java.lang.String)}.
+	 * Test method for {@link com.xiuhao.fkv.FkvImpl#get(java.lang.String)}.
 	 */
 	@Test
 	public void testGetSameKeyPerf() {
@@ -99,7 +99,7 @@ public class FkvPerfTest {
 	}
 
 	/**
-	 * Test method for {@link com.dianping.fkv.FkvImpl#get(java.lang.String)}.
+	 * Test method for {@link com.xiuhao.fkv.FkvImpl#get(java.lang.String)}.
 	 */
 	@Test
 	public void testPutDeletePerf() {

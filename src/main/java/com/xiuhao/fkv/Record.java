@@ -1,4 +1,4 @@
-package com.dianping.fkv;
+package com.xiuhao.fkv;
 
 
 public class Record {

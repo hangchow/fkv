@@ -1,4 +1,4 @@
-package com.dianping.fkv.store;
+package com.xiuhao.fkv.store;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,6 +9,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.xiuhao.fkv.store.FkvFileStore;
 
 public class FkvFileStoreTest {
 	File dbFile;

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.dianping.fkv.store;
+package com.xiuhao.fkv.store;
 
 import java.io.File;
 import java.io.IOException;
