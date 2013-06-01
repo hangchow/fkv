@@ -48,4 +48,9 @@ public interface Fkv {
 	 */
 	void close() throws IOException;
 
+	/**
+	 * delete all records
+	 */
+	void clear();
+
 }

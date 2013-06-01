@@ -107,6 +107,18 @@ public class FkvImplTest {
 	}
 
 	/**
+	 * Test method for {@link com.xiuhao.fkv.FkvImpl#delete(java.lang.String)}.
+	 */
+	@Test
+	public void testClear() {
+		String key = "01234567";
+		String value = "0123456789";
+		fkv.put(key, value);
+		fkv.clear();
+		Assert.assertNull(fkv.get(key));
+	}
+
+	/**
 	 * Test method for {@link com.xiuhao.fkv.FkvImpl#get(java.lang.String)}.
 	 * 
 	 * @throws IOException

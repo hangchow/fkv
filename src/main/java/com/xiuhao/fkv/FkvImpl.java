@@ -9,6 +9,8 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -84,6 +86,22 @@ public class FkvImpl implements Fkv {
 				this.deletedCache.add(deletedRecord);
 				this.store.put(deletedRecord.getIndex(), STATUS_DELETE);
 			}
+		} finally {
+			writeLock.unlock();
+		}
+	}
+
+	@Override
+	public void clear() {
+		try {
+			writeLock.lock();
+			Set<Entry<String, Record>> set = this.activeCache.entrySet();
+			for (Entry<String, Record> entry : set) {
+				Record deletedRecord = entry.getValue();
+				this.deletedCache.add(deletedRecord);
+				this.store.put(deletedRecord.getIndex(), STATUS_DELETE);
+			}
+			this.activeCache.clear();
 		} finally {
 			writeLock.unlock();
 		}
