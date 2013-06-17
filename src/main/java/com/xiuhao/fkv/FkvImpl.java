@@ -212,7 +212,7 @@ public class FkvImpl implements Fkv {
 			throw new IllegalArgumentException("value:" + value);
 		}
 		if (size() >= this.maxRecordSize) {
-			throw new StackOverflowError("size:" + size());
+			throw new StackOverflowError("key:" + key + " vlaue:" + value + " size:" + size());
 		}
 		try {
 			writeLock.lock();
