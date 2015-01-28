@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.xiuhao.fkv;
+package fkv;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,7 +14,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.xiuhao.fkv.FkvImpl;
+import fkv.FkvImpl;
 
 /**
  * @author sean.wang
@@ -66,7 +66,7 @@ public class FkvImplTest {
 	}
 
 	/**
-	 * Test method for {@link com.xiuhao.fkv.FkvImpl#get(java.lang.String)}.
+	 * Test method for {@link fkv.FkvImpl#get(java.lang.String)}.
 	 */
 	@Test
 	public void testPut() {
@@ -91,7 +91,7 @@ public class FkvImplTest {
 	}
 
 	/**
-	 * Test method for {@link com.xiuhao.fkv.FkvImpl#delete(java.lang.String)}.
+	 * Test method for {@link fkv.FkvImpl#delete(java.lang.String)}.
 	 */
 	@Test
 	public void testDelete() {
@@ -107,7 +107,7 @@ public class FkvImplTest {
 	}
 
 	/**
-	 * Test method for {@link com.xiuhao.fkv.FkvImpl#delete(java.lang.String)}.
+	 * Test method for {@link fkv.FkvImpl#delete(java.lang.String)}.
 	 */
 	@Test
 	public void testClear() {
@@ -119,7 +119,7 @@ public class FkvImplTest {
 	}
 
 	/**
-	 * Test method for {@link com.xiuhao.fkv.FkvImpl#get(java.lang.String)}.
+	 * Test method for {@link fkv.FkvImpl#get(java.lang.String)}.
 	 * 
 	 * @throws IOException
 	 */
@@ -152,7 +152,7 @@ public class FkvImplTest {
 	}
 
 	/**
-	 * Test method for {@link com.xiuhao.fkv.FkvImpl#get(java.lang.String)}.
+	 * Test method for {@link fkv.FkvImpl#get(java.lang.String)}.
 	 * 
 	 * @throws IOException
 	 */

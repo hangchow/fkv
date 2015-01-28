@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.xiuhao.fkv;
+package fkv;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,8 +14,8 @@ import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.xiuhao.fkv.store.FkvFileStore;
-import com.xiuhao.fkv.store.FkvStore;
+import fkv.store.FkvFileStore;
+import fkv.store.FkvStore;
 
 /**
  * Fixed length key-value store implement.

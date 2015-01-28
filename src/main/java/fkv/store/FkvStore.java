@@ -1,4 +1,4 @@
-package com.xiuhao.fkv.store;
+package fkv.store;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

@@ -1,4 +1,4 @@
-package com.xiuhao.fkv;
+package fkv;
 
 
 public class Record {
